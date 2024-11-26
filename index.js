@@ -14,7 +14,10 @@ app.post("/login", (req, res) => {
 	const {
 		body: { username, password },
 	} = req;
-    console.log(username, password);
+	console.log(username, password);
+
+	if (!username || !password)
+		return res.status(400).json("Username and password cannot be empty.");
 });
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
