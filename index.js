@@ -1,6 +1,7 @@
 import express from "express";
 import env from "dotenv";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 import pool from "./db.js";
 
@@ -52,11 +53,24 @@ app.post("/signup", async (req, res) => {
 		const hash = await bcrypt.hash(password, 15);
 
 		// Insert user into database
-		// Return the id email and username from the newly inserted user
+		// Return the id of the newly inserted user
 		try {
 			const newUser = await pool.query(
-				"INSERT INTO users (email, username, password_hash) VALUES ($1, $2, $3) RETURNING id, email, username",
+				"INSERT INTO users (email, username, password_hash) VALUES ($1, $2, $3) RETURNING id",
 				[email, username, hash]
+			);
+
+			// Generate access token and refresh token
+			// User id is the payload
+			const accessToken = jwt.sign(
+				{ id: newUser.rows[0].id },
+				process.env.ACCESS_TOKEN_SECRET,
+				{ expiresIn: "5m" }
+			);
+			const refreshToken = jwt.sign(
+				{ id: newUser.rows[0].id },
+				process.env.REFRESH_TOKEN_SECRET,
+				{ expiresIn: "15m" }
 			);
 		} catch (error) {
 			console.error(error);
