@@ -1,5 +1,6 @@
 import express from "express";
 import env from "dotenv";
+import bcrypt from "bcrypt";
 
 import pool from "./db.js";
 
@@ -46,6 +47,11 @@ app.post("/signup", async (req, res) => {
 				.status(409)
 				.json("Email or username already exist in database. Try logging in.");
 		}
+
+		// Hash the password
+		const hash = await bcrypt.hash(password, 15);
+
+		
 	} catch (error) {
 		console.log(error);
 		return res.status(500).json("Error when querying database level 1");
