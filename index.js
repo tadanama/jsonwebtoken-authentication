@@ -83,6 +83,8 @@ app.post("/signup", async (req, res) => {
 				console.error(error);
 				return res.status(500).json("Something went wrong");
 			}
+
+			return res.status(201).json({ accessToken, refreshToken });
 		} catch (error) {
 			console.error(error);
 			return res.status(500).json("Something went wrong");
