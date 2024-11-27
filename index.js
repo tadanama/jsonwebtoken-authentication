@@ -32,6 +32,12 @@ app.post("/login", async (req, res) => {
 			"SELECT * FROM users WHERE email = $1",
 			[email]
 		);
+
+		// Send error if user with the email provided don't exist
+		if (foundUserEmail.rowCount === 0)
+			return res
+				.status(409)
+				.json("User email don't exist in database. Try signing up.");
 	} catch (error) {
 		console.error(error);
 		return res.status(500).json("Something went wrong");
