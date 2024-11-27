@@ -19,7 +19,7 @@ app.post("/login", (req, res) => {
 	console.log(username, password);
 
 	if (!email || !username || !password)
-		return res.status(400).json("Username and password cannot be empty.");
+		return res.status(400).json("Email, username or password is required.");
 });
 
 app.post("/signup", (req, res) => {
@@ -32,7 +32,7 @@ app.post("/signup", (req, res) => {
 	// Check if the data is empty
 	// Return error if it is
 	if (!email || !username || !password)
-		return res.status(400).json({ error: "Username or password is required" });
+		return res.status(400).json("Email, username or password is required.");
 });
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
