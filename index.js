@@ -72,6 +72,17 @@ app.post("/signup", async (req, res) => {
 				process.env.REFRESH_TOKEN_SECRET,
 				{ expiresIn: "15m" }
 			);
+
+			// Store the refresh token below in the database
+			try {
+				const token = pool.query(
+					"INSERT INTO refresh_token (user_id, refresh_token) VALUES ($1, $2)",
+					[newUser.rows[0].id, refreshToken]
+				);
+			} catch (error) {
+				console.error(error);
+				return res.status(500).json("Something went wrong");
+			}
 		} catch (error) {
 			console.error(error);
 			return res.status(500).json("Something went wrong");
