@@ -38,6 +38,31 @@ app.post("/login", async (req, res) => {
 			return res
 				.status(409)
 				.json("User email don't exist in database. Try signing up.");
+
+		// Check the password hash from database with the password from the user
+		const passwordMatch = await bcrypt.compare(
+			password,
+			foundUserEmail.rows[0].password_hash
+		);
+
+		if (passwordMatch) {
+			// Generate access token and refresh token
+			// User id is the payload
+			const accessToken = jwt.sign(
+				{ id: newUser.rows[0].id },
+				process.env.ACCESS_TOKEN_SECRET,
+				{ expiresIn: "5m" }
+			);
+			const refreshToken = jwt.sign(
+				{ id: newUser.rows[0].id },
+				process.env.REFRESH_TOKEN_SECRET,
+				{ expiresIn: "15m" }
+			);
+
+			return res.status(201).json({ accessToken, refreshToken });
+		} else {
+			return res.status(401).json("Incorrect password");
+		}
 	} catch (error) {
 		console.error(error);
 		return res.status(500).json("Something went wrong");
