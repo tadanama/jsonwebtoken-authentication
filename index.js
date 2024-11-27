@@ -40,6 +40,11 @@ app.post("/signup", (req, res) => {
 		body: { username, password },
 	} = req;
 	console.log(username, password);
+
+	// Check if the data is empty
+	// Return error if it is
+	if (!username || !password)
+		return res.status(400).json({ error: "Username or password is required" });
 });
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
