@@ -14,7 +14,7 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 
 // Route handler for user login
-app.post("/login", (req, res) => {
+app.post("/login", async (req, res) => {
 	// Get the user data from request body
 	const {
 		body: { email, password },
@@ -25,6 +25,17 @@ app.post("/login", (req, res) => {
 	// Return error if it is
 	if (!email || !password)
 		return res.status(400).json("Email, username or password is required.");
+
+	// Check if user exist in database
+	try {
+		const foundUserEmail = await pool.query(
+			"SELECT * FROM users WHERE email = $1",
+			[email]
+		);
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json("Something went wrong");
+	}
 });
 
 app.post("/signup", async (req, res) => {
