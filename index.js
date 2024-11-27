@@ -88,6 +88,7 @@ app.post("/signup", async (req, res) => {
 			[email, username]
 		);
 
+		// If there are rows returned, send an error
 		if (userWithSameEmailOrUsername.rowCount !== 0) {
 			return res
 				.status(409)
