@@ -51,7 +51,17 @@ app.post("/signup", async (req, res) => {
 		// Hash the password
 		const hash = await bcrypt.hash(password, 15);
 
-		
+		// Insert user into database
+		// Return the id email and username from the newly inserted user
+		try {
+			const newUser = await pool.query(
+				"INSERT INTO users (email, username, password_hash) VALUES ($1, $2, $3) RETURNING id, email, username",
+				[email, username, hash]
+			);
+		} catch (error) {
+			console.error(error);
+			return res.status(500).json("Something went wrong");
+		}
 	} catch (error) {
 		console.log(error);
 		return res.status(500).json("Error when querying database level 1");
