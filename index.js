@@ -15,12 +15,15 @@ app.use(express.json());
 
 // Route handler for user login
 app.post("/login", (req, res) => {
+	// Get the user data from request body
 	const {
-		body: { email, username, password },
+		body: { email, password },
 	} = req;
-	console.log(username, password);
+	console.log(email, password);
 
-	if (!email || !username || !password)
+	// Check if the data is empty
+	// Return error if it is
+	if (!email || !password)
 		return res.status(400).json("Email, username or password is required.");
 });
 
