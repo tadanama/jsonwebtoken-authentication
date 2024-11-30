@@ -15,14 +15,14 @@ function verifyJWT(req, res, next) {
 	const token = authHeader?.split(" ")[1];
 
 	// Return error if auth header is empty
-	if (!token) return res.status(403).json("Unauthorized");
+	if (!token) return res.status(401).json("Unauthorized");
 
 	// Get the payload of the token
 	jwt.verify(
 		token,
 		process.env.REFRESH_TOKEN_SECRET,
 		async (error, decoded) => {
-			if (error) return res.status(403).json("Unauthorized");
+			if (error) return res.status(401).json("Unauthorized");
 
 			// Retrieve user info from database that matches the payload
 			try {
@@ -32,13 +32,13 @@ function verifyJWT(req, res, next) {
 				);
 
 				// Return error if user is not in database
-				if (user.rowCount === 0) return res.status(403).json("Unauthorized");
+				if (user.rowCount === 0) return res.status(401).json("Unauthorized");
 
 				// Add dynamic property to the request object
 				req.userId = user.rows.id;
 				req.username = user.rows.username;
 
-				return res.sendStatus(204);
+				next();
 			} catch (error) {
 				console.error(error);
 				res.status(500).json("Somthing went wrong");
