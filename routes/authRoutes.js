@@ -7,7 +7,60 @@ import pool from "./db.js";
 const router = Router();
 
 // Route handler for user login
-router.post("/login", async (req, res) => {});
+router.post("/login", async (req, res) => {
+	// Get the user data from request body
+	const {
+		body: { email, password },
+	} = req;
+	console.log(email, password);
+
+	// Check if the data is empty
+	// Return error if it is
+	if (!email || !password)
+		return res.status(400).json("Email, username or password is required.");
+
+	// Check if user exist in database
+	try {
+		const foundUserEmail = await pool.query(
+			"SELECT * FROM users WHERE email = $1",
+			[email]
+		);
+
+		// Send error if user with the email provided don't exist
+		if (foundUserEmail.rowCount === 0)
+			return res
+				.status(409)
+				.json("User email don't exist in database. Try signing up.");
+
+		// Check the password hash from database with the password from the user
+		const passwordMatch = await bcrypt.compare(
+			password,
+			foundUserEmail.rows[0].password_hash
+		);
+
+		if (passwordMatch) {
+			// Generate access token and refresh token
+			// User id is the payload
+			const accessToken = jwt.sign(
+				{ id: newUser.rows[0].id },
+				process.env.ACCESS_TOKEN_SECRET,
+				{ expiresIn: "5m" }
+			);
+			const refreshToken = jwt.sign(
+				{ id: newUser.rows[0].id },
+				process.env.REFRESH_TOKEN_SECRET,
+				{ expiresIn: "15m" }
+			);
+
+			return res.status(201).json({ accessToken, refreshToken });
+		} else {
+			return res.status(401).json("Incorrect password");
+		}
+	} catch (error) {
+		console.error(error);
+		return res.status(500).json("Something went wrong");
+	}
+});
 
 router.post("/signup", async (req, res) => {
 	// Get the user data from request body
