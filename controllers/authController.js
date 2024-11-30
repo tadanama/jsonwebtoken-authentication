@@ -108,18 +108,14 @@ async function signup(req, res) {
 				{ expiresIn: "15m" }
 			);
 
-			// Store the refresh token below in the database
-			try {
-				const token = pool.query(
-					"INSERT INTO refresh_token (user_id, refresh_token) VALUES ($1, $2)",
-					[newUser.rows[0].id, refreshToken]
-				);
-			} catch (error) {
-				console.error(error);
-				return res.status(500).json("Something went wrong");
-			}
+			// Send refreshToken as httpOnly cookie
+			// Set expire date with the same value as the refreshToken
+			res.cookie("jwt", refreshToken, {
+				maxAge: 1000 * 60 * 15,
+				httpOnly: true,
+			});
 
-			return res.status(201).json({ accessToken, refreshToken });
+			return res.status(201).json({ accessToken });
 		} catch (error) {
 			console.error(error);
 			return res.status(500).json("Something went wrong");
