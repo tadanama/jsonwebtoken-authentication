@@ -48,7 +48,14 @@ async function login(req, res) {
 				{ expiresIn: "15m" }
 			);
 
-			return res.status(201).json({ accessToken, refreshToken });
+			// Send refreshToken as httpOnly cookie
+			// Set expire date with the same value as the refreshToken
+			res.cookie("jwt", refreshToken, {
+				maxAge: 1000 * 60 * 15,
+				httpOnly: true,
+			});
+
+			return res.status(201).json({ accessToken });
 		} else {
 			return res.status(401).json("Incorrect password");
 		}
