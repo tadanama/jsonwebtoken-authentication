@@ -136,7 +136,13 @@ async function signup(req, res) {
 // Refresh the user's access token
 // Check if refresh token is valid first
 function refresh(req, res) {
-	
+	// Returns in the format of " refreshToken=refreshTokenValue "
+	const cookie = req.headers.cookie;
+
+	if (!cookie) return res.status(403).json("Forbidden");
+
+	// Split the cookie to get the value of the refresh token
+	const refreshToken = cookie.split("=")[1];
 }
 
 export { login, signup };
