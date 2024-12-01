@@ -133,4 +133,10 @@ async function signup(req, res) {
 	}
 }
 
+// Refresh the user's access token
+// Check if refresh token is valid first
+function refresh(req, res) {
+	
+}
+
 export { login, signup };
