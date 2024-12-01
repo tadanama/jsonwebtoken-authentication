@@ -143,6 +143,31 @@ function refresh(req, res) {
 
 	// Split the cookie to get the value of the refresh token
 	const refreshToken = cookie.split("=")[1];
+
+	// Verify the tefresh token
+	jwt.verify(
+		refreshToken,
+		process.env.REFRESH_TOKEN_SECRET,
+		async (error, decoded) => {
+			if (error) return res.status(403).json("Forbidden");
+
+			// Check if any user in database has the same id with the id in the decoded payload
+			const userExist = await pool.query("SELECT id FROM users WHERE id = $1", [
+				decoded.id,
+			]);
+
+			if (userExist.rowCount === 0) return res.status(401).json("Unauthorized");
+
+			// Sign new access token with the user id as payload
+			const accessToken = jwt.sign(
+				{ id: userExist.rows[0] },
+				process.env.ACCESS_TOKEN_SECRET,
+				{ expiresIn: "5m" }
+			);
+
+			res.json({ accessToken });
+		}
+	);
 }
 
-export { login, signup };
+export { login, signup, refresh};
