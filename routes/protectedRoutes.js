@@ -8,3 +8,5 @@ const router = express.Router();
 router.get("/", verifyJWT, (req, res) => {
 	res.status(200).json({ message: "You are authenticated" });
 });
+
+export default router;
