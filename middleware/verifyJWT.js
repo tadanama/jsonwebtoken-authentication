@@ -8,21 +8,29 @@ env.config();
 
 function verifyJWT(req, res, next) {
 	// Retrieve the access token from authorization headers
-	const authHeader = req.headers.authorization || req.headers.authorization;
+	const authHeader = req.headers.Authorization || req.headers.authorization;
+	console.log("Auth header:", authHeader);
 
 	// Authorization headers is in the format "Bearer <really-long-token>"
 	// Line below extracts only the token from the header
 	const token = authHeader?.split(" ")[1];
+	console.log("Token:", token);
 
 	// Return error if auth header is empty
-	if (!token) return res.status(401).json("Unauthorized");
+	if (!token) {
+		console.log("Token is empty");
+		return res.status(401).json("Unauthorized");
+	}
 
 	// Get the payload of the token
 	jwt.verify(
 		token,
-		process.env.REFRESH_TOKEN_SECRET,
+		process.env.ACCESS_TOKEN_SECRET,
 		async (error, decoded) => {
-			if (error) return res.status(401).json("Unauthorized");
+			if (error) {
+				console.log("Error verifying password");
+				return res.status(401).json("Unauthorized");
+			}
 
 			// Retrieve user info from database that matches the payload
 			try {
