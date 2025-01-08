@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import env from "dotenv";
 
-import pool from "./db.js";
+import pool from "../db.js";
 
 // Enable the use environment variables
 env.config();

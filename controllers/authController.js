@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-import pool from "./db.js";
+import pool from "../db.js";
 
 async function login(req, res) {
 	// Get the user data from request body
@@ -170,4 +170,4 @@ function refresh(req, res) {
 	);
 }
 
-export { login, signup, refresh};
+export { login, signup, refresh };
