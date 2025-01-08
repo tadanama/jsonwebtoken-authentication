@@ -38,12 +38,12 @@ async function login(req, res) {
 			// Generate access token and refresh token
 			// User id is the payload
 			const accessToken = jwt.sign(
-				{ id: newUser.rows[0].id },
+				{ id: foundUserEmail.rows[0].id },
 				process.env.ACCESS_TOKEN_SECRET,
 				{ expiresIn: "5m" }
 			);
 			const refreshToken = jwt.sign(
-				{ id: newUser.rows[0].id },
+				{ id: foundUserEmail.rows[0].id },
 				process.env.REFRESH_TOKEN_SECRET,
 				{ expiresIn: "15m" }
 			);
